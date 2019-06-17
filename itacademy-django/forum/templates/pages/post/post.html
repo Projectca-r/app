@@ -1,0 +1,103 @@
+{% extends 'pages/_forum.html' %}
+{% load static %}
+
+{% block content %}
+
+
+    <div class="row mb-2">
+        <div class="col">
+
+            <div class="card">
+                <div class="card-body">
+                    <h1>{{ object.title }}</h1>
+                    <div>
+                        {{ object.content }}
+                    </div>
+
+                    <div>
+                        {% for tag in object.tags_list %}
+                            <a href="{{ tag }}">{{ tag }}</a>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col">
+
+            {% if comments %}
+                <div class="card">
+                    <ul class="list-group list-group-flush" id="comment-list">
+                        {% for comment in comments %}
+
+                            <li class="list-group-item">
+                                {{ comment.content }}
+                            </li>
+
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <form action="{% url 'forum:create-comment' %}"
+                          method="post"
+                          id="comment-form"
+                    >
+                        {{ comment_form.as_p }}
+
+                        <div>
+                            {% csrf_token %}
+                            <button
+                                    id="ajax-button"
+                                    type="submit"
+                                    class="btn btn-primary">Save
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script>
+
+        $(document).ready(function () {
+            $('#ajax-button').on('click', function () {
+
+                $.post(
+                    '{% url 'forum:ajax' %}',
+                    $('#comment-form').serialize(),
+                    function (response) {
+                        $('<li/>')
+                            .addClass('list-group-item')
+                            .text(response.comment)
+                            .appendTo($('#comment-list'));
+                        $('#comment-form').trigger('reset')
+                    }
+                );
+
+                return false;
+            });
+
+            setInterval(function () {
+                console.log('interval');
+            }, 5000);
+
+
+        });
+
+    </script>
+
+
+{% endblock %}

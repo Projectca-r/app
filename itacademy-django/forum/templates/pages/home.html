@@ -1,0 +1,65 @@
+{% extends 'pages/_forum.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-2">
+            <button
+                    id="ajax-button"
+                    class="btn btn-outline-primary">Push me
+            </button>
+        </div>
+        <div class="col-10">
+            <div class="jumbotron" id="ajax-content">
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col">
+
+            <div class="card">
+
+                <ul class="list-group list-group-flush">
+                    {% for thread in threads %}
+
+                        <li class="list-group-item" id="li-{{ thread.pk }}">
+                            <a href="{{ thread.get_absolute_url }}"
+                               class="thread-link"
+                               id="link-{{ thread.pk }}">
+                                {{ thread.title }}
+                            </a>
+                        </li>
+
+                    {% endfor %}
+                </ul>
+
+            </div>
+
+
+        </div>
+    </div>
+
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script>
+
+        $(document).ready(function () {
+            $('#ajax-button').on('click', function () {
+
+                $.post('{% url 'forum:ajax' %}', {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    title: 'Some data',
+                    content: 123,
+                }, function () {
+
+                });
+
+            });
+        });
+
+    </script>
+{% endblock %}
